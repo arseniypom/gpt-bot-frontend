@@ -13,11 +13,11 @@ export interface CreateTransactionBody {
     status: string;
     amount: { value: string; currency: 'RUB' };
     metadata: {
-      telegramId: number;
+      telegramId: string;
       packageName: PackageName;
-      basicRequestsBalance: number | undefined;
-      proRequestsBalance: number | undefined;
-      imageGenerationBalance: number | undefined;
+      basicRequestsBalance: string | undefined;
+      proRequestsBalance: string | undefined;
+      imageGenerationBalance: string | undefined;
     };
   };
 }

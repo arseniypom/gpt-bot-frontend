@@ -21,7 +21,6 @@ export default async function handler(
   res: NextApiResponse,
 ) {
   await dbConnect();
-  console.log('----- Connected to db');
 
   const clientIP = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
 
@@ -30,20 +29,14 @@ export default async function handler(
   }
 
   if (req.method === 'POST') {
-    console.log('----- POST request received');
-    console.log('req.body', req.body);
     const body = req.body;
     if (!isValidCreateTransactionBody(body)) {
-      console.log('----- Invalid request body');
       return res.status(400).json({ error: 'Invalid request body' });
     }
-
-    console.log('----- Valid request body');
 
     try {
       switch (body.event) {
         case 'payment.succeeded': {
-          console.log('----- payment.succeeded');
           const { id, status, amount, metadata } = body.object;
           const totalAmountInt = parseFloat(amount.value);
           if (isNaN(totalAmountInt)) {
@@ -56,24 +49,24 @@ export default async function handler(
             yookassaPaymentId: id,
             status,
           });
-          console.log('----- Transaction created');
 
           const user = await User.findOne({ telegramId: metadata.telegramId });
           if (!user) {
             return res.status(404).json({ error: 'User not found' });
           }
           if (metadata.basicRequestsBalance) {
-            user.basicRequestsBalance += metadata.basicRequestsBalance;
+            user.basicRequestsBalance += Number(metadata.basicRequestsBalance);
           }
           if (metadata.proRequestsBalance) {
-            user.proRequestsBalance += metadata.proRequestsBalance;
+            user.proRequestsBalance += Number(metadata.proRequestsBalance);
           }
           if (metadata.imageGenerationBalance) {
-            user.imageGenerationBalance += metadata.imageGenerationBalance;
+            user.imageGenerationBalance += Number(
+              metadata.imageGenerationBalance,
+            );
           }
           user.updatedAt = new Date();
           await user.save();
-          console.log('----- User updated');
 
           return res.status(200).json({ message: 'Transaction saved' });
         }
