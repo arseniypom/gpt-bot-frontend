@@ -68,6 +68,51 @@ export default async function handler(
           user.updatedAt = new Date();
           await user.save();
 
+          const BOT_API_KEY =
+            process.env.NODE_ENV === 'production'
+              ? process.env.BOT_API_KEY_PROD
+              : process.env.BOT_API_KEY_DEV;
+
+          try {
+            await fetch(
+              `https://api.telegram.org/bot${BOT_API_KEY}/sendMessage`,
+              {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  chat_id: metadata.telegramId,
+                  parse_mode: 'MarkdownV2',
+                  text: `*Баланс пополнен!🎉*\n_Благодарим за покупку_`,
+                }),
+              },
+            );
+            await fetch(
+              `https://api.telegram.org/bot${BOT_API_KEY}/sendMessage`,
+              {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  chat_id: metadata.telegramId,
+                  parse_mode: 'MarkdownV2',
+                  text: `*Ваш текущий баланс 💰 *
+––––––
+*Базовые запросы* \\(GPT\\-3\\.5, GPT\\-4o\\-mini\\):
+⭐️ ${user.basicRequestsBalance}
+*PRO запросы* \\(GPT\\-4o\\):
+🌟 ${user.proRequestsBalance}
+*Генерация изображений*:
+🖼️ ${user.imageGenerationBalance}`,
+                }),
+              },
+            );
+          } catch (error) {
+            console.error('failed to send telegram message', error);
+          }
+
           return res
             .status(200)
             .json({ message: 'Transaction with succeeded status saved' });
