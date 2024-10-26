@@ -4,13 +4,14 @@ type PaymentEvent =
   | 'payment.succeeded'
   | 'payment.canceled'
   | 'refund.succeeded';
+type PaymentStatus = 'succeeded' | 'canceled';
 
 export interface CreateTransactionBody {
   type: 'notification';
   event: PaymentEvent;
   object: {
     id: string;
-    status: string;
+    status: PaymentStatus;
     amount: { value: string; currency: 'RUB' };
     metadata: {
       telegramId: string;
