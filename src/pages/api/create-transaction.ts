@@ -74,7 +74,7 @@ export default async function handler(
               : process.env.BOT_API_KEY_DEV;
 
           try {
-            await fetch(
+            const response = await fetch(
               `https://api.telegram.org/bot${BOT_API_KEY}/sendMessage`,
               {
                 method: 'POST',
@@ -87,8 +87,7 @@ export default async function handler(
                   text: `*Баланс пополнен 🎉*
 _Благодарим за покупку!_
 
-*Ваш текущий баланс 💰 *
-
+Текущий баланс:
 *Базовые запросы* _\\(GPT\\-3\\.5, GPT\\-4o\\-mini\\)_:
 ⭐️ ${user.basicRequestsBalance}
 *PRO запросы* _\\(GPT\\-4o\\)_:
@@ -98,8 +97,15 @@ _Благодарим за покупку!_
                 }),
               },
             );
+            if (response.status !== 200) {
+              throw new Error(
+                `Failed to send telegram message to user ${
+                  metadata.telegramId
+                }: ${JSON.stringify(response.body)}`,
+              );
+            }
           } catch (error) {
-            console.error('failed to send telegram message', error);
+            console.error(`Error in sending tg message`, error);
           }
 
           return res

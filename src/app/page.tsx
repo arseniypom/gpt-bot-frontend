@@ -12,7 +12,7 @@ export default function Page() {
             Ваш платеж был обработан&nbsp;✅
           </h5>
           <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">
-            Теперь можете закрыть эту страницу и&nbsp;вернуться к&nbsp;боту для
+            Вы можете закрыть эту страницу и&nbsp;вернуться к&nbsp;боту для
             проверки баланса.
           </p>
         </div>
