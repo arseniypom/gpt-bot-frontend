@@ -101,7 +101,7 @@ _Благодарим за покупку!_
               throw new Error(
                 `Failed to send telegram message to user ${
                   metadata.telegramId
-                }: ${JSON.stringify(response.body)}`,
+                }: ${JSON.stringify(response)}`,
               );
             }
           } catch (error) {
