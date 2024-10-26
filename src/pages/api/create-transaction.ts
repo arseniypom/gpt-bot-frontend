@@ -84,7 +84,7 @@ export default async function handler(
                   chat_id: metadata.telegramId,
                   parse_mode: 'MarkdownV2',
                   text: `*Баланс пополнен 🎉*
-_Благодарим за покупку!_
+_Благодарим за покупку\\!_
 
 Текущий баланс:
 *Базовые запросы* _\\(GPT\\-3\\.5, GPT\\-4o\\-mini\\)_:
@@ -96,14 +96,13 @@ _Благодарим за покупку!_
                 }),
               },
             );
-            // TODO: remove after debug
-            console.log(response);
 
-            if (response.status !== 200) {
+            if (!response.ok) {
+              const jsonData = await response.json();
               throw new Error(
                 `Failed to send telegram message to user ${
                   metadata.telegramId
-                } | yookassaPaymentId ${id}: ${JSON.stringify(response)}`,
+                } | yookassaPaymentId ${id}: ${jsonData.description}`,
               );
             }
           } catch (error) {
