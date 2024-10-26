@@ -33,11 +33,15 @@ export default async function handler(
     if (!isValidCreateTransactionBody(body)) {
       return res.status(400).json({ error: 'Invalid request body' });
     }
+    const { id, status, amount, metadata } = body.object;
+    const BOT_API_KEY =
+      process.env.NODE_ENV === 'production'
+        ? process.env.BOT_API_KEY_PROD
+        : process.env.BOT_API_KEY_DEV;
 
     try {
       switch (body.event) {
         case 'payment.succeeded': {
-          const { id, status, amount, metadata } = body.object;
           const totalAmountInt = parseFloat(amount.value);
           if (isNaN(totalAmountInt)) {
             return res.status(400).json({ error: 'Invalid amount' });
@@ -68,11 +72,6 @@ export default async function handler(
           user.updatedAt = new Date();
           await user.save();
 
-          const BOT_API_KEY =
-            process.env.NODE_ENV === 'production'
-              ? process.env.BOT_API_KEY_PROD
-              : process.env.BOT_API_KEY_DEV;
-
           try {
             const response = await fetch(
               `https://api.telegram.org/bot${BOT_API_KEY}/sendMessage`,
@@ -97,11 +96,14 @@ _Благодарим за покупку!_
                 }),
               },
             );
+            // TODO: remove after debug
+            console.log(response);
+
             if (response.status !== 200) {
               throw new Error(
                 `Failed to send telegram message to user ${
                   metadata.telegramId
-                }: ${JSON.stringify(response)}`,
+                } | yookassaPaymentId ${id}: ${JSON.stringify(response)}`,
               );
             }
           } catch (error) {
@@ -114,7 +116,6 @@ _Благодарим за покупку!_
         }
 
         case 'payment.canceled': {
-          const { id, status, amount, metadata } = body.object;
           const totalAmountInt = parseFloat(amount.value);
           if (isNaN(totalAmountInt)) {
             return res.status(400).json({ error: 'Invalid amount' });
@@ -133,7 +134,6 @@ _Благодарим за покупку!_
         }
 
         case 'refund.succeeded': {
-          const { id, status, amount, metadata } = body.object;
           await YookassaTransaction.create({
             telegramId: metadata.telegramId,
             totalAmount: amount.value,
@@ -152,6 +152,19 @@ _Благодарим за покупку!_
       }
     } catch (error) {
       console.error(error);
+      await fetch(`https://api.telegram.org/bot${BOT_API_KEY}/sendMessage`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          chat_id: process.env.ADMIN_TELEGRAM_ID,
+          parse_mode: 'MarkdownV2',
+          text: `ERROR: failed to save transaction | yookassaPaymentId ${id} | event ${
+            body.event
+          } | ${JSON.stringify(error)}`,
+        }),
+      });
       return res.status(500).json({ error: 'Failed to save transaction' });
     }
   } else {
