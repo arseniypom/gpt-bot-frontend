@@ -72,6 +72,9 @@ export default async function handler(
         }
 
         case 'payment.canceled': {
+          console.log('payment.canceled, id:', body.object.id);
+          console.log('BODY:', body);
+
           const { id, status, amount, metadata } = body.object;
           const totalAmountInt = parseFloat(amount.value);
           if (isNaN(totalAmountInt)) {
