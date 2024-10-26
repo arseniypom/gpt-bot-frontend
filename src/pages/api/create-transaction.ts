@@ -68,13 +68,12 @@ export default async function handler(
           user.updatedAt = new Date();
           await user.save();
 
-          return res.status(200).json({ message: 'Transaction saved' });
+          return res
+            .status(200)
+            .json({ message: 'Transaction with succeeded status saved' });
         }
 
         case 'payment.canceled': {
-          console.log('payment.canceled, id:', body.object.id);
-          console.log('BODY:', body);
-
           const { id, status, amount, metadata } = body.object;
           const totalAmountInt = parseFloat(amount.value);
           if (isNaN(totalAmountInt)) {
@@ -87,16 +86,29 @@ export default async function handler(
             yookassaPaymentId: id,
             status,
           });
-          break;
+
+          return res
+            .status(200)
+            .json({ message: 'Transaction with canceled status saved' });
         }
 
         case 'refund.succeeded': {
-          // TODO: Handle refund success logic
-          break;
+          const { id, status, amount, metadata } = body.object;
+          await YookassaTransaction.create({
+            telegramId: metadata.telegramId,
+            totalAmount: amount.value,
+            packageName: metadata.packageName,
+            yookassaPaymentId: id,
+            status,
+          });
+
+          return res
+            .status(200)
+            .json({ message: 'Transaction with refund status saved' });
         }
 
         default:
-          return res.status(400).json({ error: 'Invalid event' });
+          throw new Error('Invalid event');
       }
     } catch (error) {
       console.error(error);
