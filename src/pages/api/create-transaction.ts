@@ -84,25 +84,14 @@ export default async function handler(
                 body: JSON.stringify({
                   chat_id: metadata.telegramId,
                   parse_mode: 'MarkdownV2',
-                  text: `*Баланс пополнен!🎉*\n_Благодарим за покупку_`,
-                }),
-              },
-            );
-            await fetch(
-              `https://api.telegram.org/bot${BOT_API_KEY}/sendMessage`,
-              {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                  chat_id: metadata.telegramId,
-                  parse_mode: 'MarkdownV2',
-                  text: `*Ваш текущий баланс 💰 *
-––––––
-*Базовые запросы* \\(GPT\\-3\\.5, GPT\\-4o\\-mini\\):
+                  text: `*Баланс пополнен 🎉*
+_Благодарим за покупку!_
+
+*Ваш текущий баланс 💰 *
+
+*Базовые запросы* _\\(GPT\\-3\\.5, GPT\\-4o\\-mini\\)_:
 ⭐️ ${user.basicRequestsBalance}
-*PRO запросы* \\(GPT\\-4o\\):
+*PRO запросы* _\\(GPT\\-4o\\)_:
 🌟 ${user.proRequestsBalance}
 *Генерация изображений*:
 🖼️ ${user.imageGenerationBalance}`,
