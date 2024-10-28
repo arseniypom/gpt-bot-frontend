@@ -20,6 +20,10 @@ export interface CreateTransactionBody {
       proRequestsBalance: string | undefined;
       imageGenerationBalance: string | undefined;
     };
+    cancellation_details?: {
+      party: string;
+      reason: string;
+    };
   };
 }
 

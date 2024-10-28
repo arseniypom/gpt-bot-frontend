@@ -101,9 +101,7 @@ _Благодарим за покупку\\!_`,
             if (!response.ok) {
               const jsonData = await response.json();
               throw new Error(
-                `Failed to send telegram message to user ${
-                  metadata.telegramId
-                } | yookassaPaymentId ${id}: ${jsonData.description}`,
+                `Failed to send telegram message to user ${metadata.telegramId} | yookassaPaymentId ${id}: ${jsonData.description}`,
               );
             }
           } catch (error) {
@@ -127,6 +125,35 @@ _Благодарим за покупку\\!_`,
             yookassaPaymentId: id,
             status,
           });
+
+          try {
+            const response = await fetch(
+              `https://api.telegram.org/bot${BOT_API_KEY}/sendMessage`,
+              {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  chat_id: process.env.ADMIN_TELEGRAM_ID,
+                  parse_mode: 'MarkdownV2',
+                  text: `Отмена платежа:
+*YookassaPaymentId*: ${id}
+*TgId*: ${metadata.telegramId}
+*Details*: ${JSON.stringify(body.object?.cancellation_details)}`,
+                }),
+              },
+            );
+
+            if (!response.ok) {
+              const jsonData = await response.json();
+              throw new Error(
+                `Failed to send telegram message to admin | yookassaPaymentId ${id}: ${jsonData.description}`,
+              );
+            }
+          } catch (error) {
+            console.error(`Error in sending tg message`, error);
+          }
 
           return res
             .status(200)
