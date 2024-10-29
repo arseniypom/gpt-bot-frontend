@@ -127,7 +127,29 @@ _Благодарим за покупку\\!_`,
           });
 
           try {
-            const response = await fetch(
+            const responseFromUser = await fetch(
+              `https://api.telegram.org/bot${BOT_API_KEY}/sendMessage`,
+              {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  chat_id: metadata.telegramId,
+                  parse_mode: 'MarkdownV2',
+                  text: `*Кажется, что\\-то пошло не так 🤔*\nК сожалению, мы не смогли обработать ваш платеж\\.\n\nПожалуйста, попробуйте ещё раз \\/topup или обратитесь в поддержку \\/support`,
+                }),
+              },
+            );
+
+            if (!responseFromUser.ok) {
+              const jsonData = await responseFromUser.json();
+              throw new Error(
+                `Failed to send telegram message to user ${metadata.telegramId} about canceled payment | yookassaPaymentId ${id}: ${jsonData.description}`,
+              );
+            }
+
+            const responseFromAdmin = await fetch(
               `https://api.telegram.org/bot${BOT_API_KEY}/sendMessage`,
               {
                 method: 'POST',
@@ -145,8 +167,8 @@ _Благодарим за покупку\\!_`,
               },
             );
 
-            if (!response.ok) {
-              const jsonData = await response.json();
+            if (!responseFromAdmin.ok) {
+              const jsonData = await responseFromAdmin.json();
               throw new Error(
                 `Failed to send telegram message to admin | yookassaPaymentId ${id}: ${jsonData.description}`,
               );
