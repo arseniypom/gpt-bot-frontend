@@ -14,6 +14,7 @@ export interface User {
   imageGenerationBalanceLeftToday: number;
   subscriptionLevel: SubscriptionLevel;
   subscriptionExpiry?: Date;
+  yookassaPaymentMethodId?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -59,6 +60,10 @@ const userSchema: Schema<User> = new Schema({
   },
   subscriptionExpiry: {
     type: Date,
+    default: null,
+  },
+  yookassaPaymentMethodId: {
+    type: String,
     default: null,
   },
   createdAt: {

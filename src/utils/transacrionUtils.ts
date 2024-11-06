@@ -228,6 +228,7 @@ export const handleSubscriptionTransactionSuccess = async ({
   }
 
   user.subscriptionLevel = metadata.subscriptionLevel;
+  user.yookassaPaymentMethodId = paymentMethod.id;
   if (metadata.daysDuration) {
     user.subscriptionExpiry = dayjs()
       .add(metadata.daysDuration, 'day')
