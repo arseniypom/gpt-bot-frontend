@@ -41,6 +41,18 @@ const userSchema: Schema<User> = new Schema({
     type: String,
     required: true,
   },
+  basicRequestsBalanceLeftToday: {
+    type: Number,
+    required: true,
+  },
+  proRequestsBalanceLeftToday: {
+    type: Number,
+    required: true,
+  },
+  imageGenerationBalanceLeftToday: {
+    type: Number,
+    required: true,
+  },
   subscriptionLevel: {
     type: String,
     required: true,
