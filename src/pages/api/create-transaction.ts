@@ -61,6 +61,7 @@ export default async function handler(
               metadata,
               botApiKey: BOT_API_KEY,
             });
+            break;
           } else if (isSubscriptionTransaction(metadata)) {
             await handleSubscriptionTransactionSuccess({
               res,
@@ -71,6 +72,7 @@ export default async function handler(
               paymentMethod: payment_method,
               botApiKey: BOT_API_KEY,
             });
+            break;
           } else {
             throw new Error('Invalid metadata in payment.succeeded');
           }
@@ -87,6 +89,7 @@ export default async function handler(
               botApiKey: BOT_API_KEY,
               details: body.object.cancellation_details,
             });
+            break;
           } else if (isSubscriptionTransaction(metadata)) {
             await handleSubscriptionTransactionCanceled({
               res,
@@ -98,6 +101,7 @@ export default async function handler(
               botApiKey: BOT_API_KEY,
               details: body.object.cancellation_details,
             });
+            break;
           } else {
             throw new Error('Invalid metadata in payment.canceled');
           }
@@ -124,7 +128,9 @@ export default async function handler(
           } else {
             throw new Error('Invalid metadata in refund.succeeded');
           }
-          return res.status(200).json({ message: 'Transaction with refund status saved' });
+          return res
+            .status(200)
+            .json({ message: 'Transaction with refund status saved' });
         }
 
         default:
