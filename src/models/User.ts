@@ -13,8 +13,8 @@ export interface User {
   proRequestsBalanceLeftToday: number;
   imageGenerationBalanceLeftToday: number;
   subscriptionLevel: SubscriptionLevel;
-  subscriptionExpiry?: Date;
-  yookassaPaymentMethodId?: string;
+  subscriptionExpiry: Date | null;
+  yookassaPaymentMethodId: string | null;
   createdAt: Date;
   updatedAt: Date;
 }
