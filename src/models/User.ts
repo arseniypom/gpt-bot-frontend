@@ -1,7 +1,7 @@
-// Импорт необходимых модулей и типов
-import mongoose, { Document, Schema } from 'mongoose';
+import { SubscriptionLevel } from '@/types/packagesAndSubscriptions';
+import { Schema, model } from 'mongoose';
 
-export interface UserDocument extends Document {
+export interface User {
   telegramId: number;
   firstName?: string;
   userName?: string;
@@ -9,17 +9,22 @@ export interface UserDocument extends Document {
   proRequestsBalance: number;
   imageGenerationBalance: number;
   selectedModel: string;
+  basicRequestsBalanceLeftToday: number;
+  proRequestsBalanceLeftToday: number;
+  imageGenerationBalanceLeftToday: number;
+  subscriptionLevel: SubscriptionLevel;
+  subscriptionExpiry?: Date;
   createdAt: Date;
   updatedAt: Date;
 }
 
-const userSchema: Schema<UserDocument> = new mongoose.Schema({
+const userSchema: Schema<User> = new Schema({
   telegramId: { type: Number, unique: true, required: true },
   firstName: { type: String },
   userName: { type: String },
   basicRequestsBalance: {
     type: Number,
-    default: 20,
+    default: 15,
     required: true,
   },
   proRequestsBalance: {
@@ -36,13 +41,23 @@ const userSchema: Schema<UserDocument> = new mongoose.Schema({
     type: String,
     required: true,
   },
+  subscriptionLevel: {
+    type: String,
+    required: true,
+  },
+  subscriptionExpiry: {
+    type: Date,
+    default: null,
+  },
   createdAt: {
     type: Date,
     immutable: true,
+    default: () => Date.now(),
   },
   updatedAt: {
     type: Date,
+    default: () => Date.now(),
   },
 });
 
-export default mongoose.model<UserDocument>('User', userSchema);
+export default model<User>('user', userSchema);

@@ -1,10 +1,36 @@
-import { PackageName } from './packages';
+import { PackageName, SubscriptionLevel } from './packagesAndSubscriptions';
 
 type PaymentEvent =
   | 'payment.succeeded'
   | 'payment.canceled'
   | 'refund.succeeded';
-type PaymentStatus = 'succeeded' | 'canceled';
+export type PaymentStatus = 'succeeded' | 'canceled';
+
+export interface PackageMetadata {
+  telegramId: string;
+  packageName: PackageName;
+  basicRequestsBalance?: string;
+  proRequestsBalance?: string;
+  imageGenerationBalance?: string;
+}
+
+export interface SubscriptionMetadata {
+  telegramId: string;
+  subscriptionLevel: SubscriptionLevel;
+  basicRequestsPerDay: number;
+  proRequestsPerDay?: number;
+  imageGenerationPerDay?: number;
+  daysDuration?: number;
+  monthsDuration?: number;
+}
+
+export interface SubscriptionPaymentMethod {
+  type: string;
+  id: string;
+  saved: boolean;
+  title?: string;
+  account_number?: string;
+}
 
 export interface CreateTransactionBody {
   type: 'notification';
@@ -13,17 +39,12 @@ export interface CreateTransactionBody {
     id: string;
     status: PaymentStatus;
     amount: { value: string; currency: 'RUB' };
-    metadata: {
-      telegramId: string;
-      packageName: PackageName;
-      basicRequestsBalance?: string;
-      proRequestsBalance?: string;
-      imageGenerationBalance?: string;
-    };
+    metadata: PackageMetadata | SubscriptionMetadata;
     cancellation_details?: {
       party: string;
       reason: string;
     };
+    payment_method: SubscriptionPaymentMethod;
   };
 }
 
@@ -40,4 +61,16 @@ export const isValidCreateTransactionBody = (
     !!body.object.amount.value &&
     !!body.object.metadata.telegramId
   );
+};
+
+export const isPackageTransaction = (
+  metadata: PackageMetadata | SubscriptionMetadata,
+): metadata is PackageMetadata => {
+  return 'packageName' in metadata;
+};
+
+export const isSubscriptionTransaction = (
+  metadata: PackageMetadata | SubscriptionMetadata,
+): metadata is SubscriptionMetadata => {
+  return 'subscriptionLevel' in metadata;
 };

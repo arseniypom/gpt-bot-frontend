@@ -1,6 +1,6 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import { Schema, model } from 'mongoose';
 
-export interface YookassaTransactionDocument extends Document {
+export interface PackageTransaction {
   telegramId: number;
   totalAmount: number;
   packageName: string;
@@ -9,7 +9,7 @@ export interface YookassaTransactionDocument extends Document {
   createdAt: Date;
 }
 
-const yookassaTransactionSchema = new Schema<YookassaTransactionDocument>({
+const packageTransactionSchema: Schema<PackageTransaction> = new Schema({
   telegramId: { type: Number, required: true },
   totalAmount: { type: Number },
   packageName: { type: String, required: true },
@@ -21,7 +21,7 @@ const yookassaTransactionSchema = new Schema<YookassaTransactionDocument>({
   },
 });
 
-export default mongoose.model<YookassaTransactionDocument>(
-  'YookassaTransaction',
-  yookassaTransactionSchema,
+export default model<PackageTransaction>(
+  'package_transaction',
+  packageTransactionSchema,
 );

@@ -1,9 +1,19 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import ipRangeCheck from 'ip-range-check';
-import { isValidCreateTransactionBody } from '@/types';
-import YookassaTransaction from '@/models/YookassaTransaction';
-import User from '@/models/User';
+import {
+  isPackageTransaction,
+  isSubscriptionTransaction,
+  isValidCreateTransactionBody,
+} from '@/types';
+import PackageTransaction from '@/models/PackageTransaction';
+import SubscriptionTransaction from '@/models/SubscriptionTransaction';
 import dbConnect from '@/lib/mongodb';
+import {
+  handlePackageTransactionSuccess,
+  handleSubscriptionTransactionSuccess,
+  handlePackageTransactionCanceled,
+  handleSubscriptionTransactionCanceled,
+} from '@/utils/transacrionUtils';
 
 // List of allowed IPs and subnets
 const allowedIPs = [
@@ -33,7 +43,7 @@ export default async function handler(
     if (!isValidCreateTransactionBody(body)) {
       return res.status(400).json({ error: 'Invalid request body' });
     }
-    const { id, status, amount, metadata } = body.object;
+    const { id, status, amount, metadata, payment_method } = body.object;
     const BOT_API_KEY =
       process.env.NODE_ENV === 'production'
         ? process.env.BOT_API_KEY_PROD
@@ -42,158 +52,79 @@ export default async function handler(
     try {
       switch (body.event) {
         case 'payment.succeeded': {
-          const totalAmountInt = parseFloat(amount.value);
-          if (isNaN(totalAmountInt)) {
-            return res.status(400).json({ error: 'Invalid amount' });
+          if (isPackageTransaction(metadata)) {
+            await handlePackageTransactionSuccess({
+              res,
+              id,
+              status,
+              amount,
+              metadata,
+              botApiKey: BOT_API_KEY,
+            });
+          } else if (isSubscriptionTransaction(metadata)) {
+            await handleSubscriptionTransactionSuccess({
+              res,
+              id,
+              status,
+              amount,
+              metadata,
+              paymentMethod: payment_method,
+              botApiKey: BOT_API_KEY,
+            });
+          } else {
+            throw new Error('Invalid metadata in payment.succeeded');
           }
-          await YookassaTransaction.create({
-            telegramId: metadata.telegramId,
-            totalAmount: totalAmountInt,
-            packageName: metadata.packageName,
-            yookassaPaymentId: id,
-            status,
-          });
-
-          const user = await User.findOne({ telegramId: metadata.telegramId });
-          if (!user) {
-            return res.status(404).json({ error: 'User not found' });
-          }
-          if (metadata.basicRequestsBalance) {
-            user.basicRequestsBalance += Number(metadata.basicRequestsBalance);
-          }
-          if (metadata.proRequestsBalance) {
-            user.proRequestsBalance += Number(metadata.proRequestsBalance);
-          }
-          if (metadata.imageGenerationBalance) {
-            user.imageGenerationBalance += Number(
-              metadata.imageGenerationBalance,
-            );
-          }
-          user.updatedAt = new Date();
-          await user.save();
-
-          try {
-            const response = await fetch(
-              `https://api.telegram.org/bot${BOT_API_KEY}/sendMessage`,
-              {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                  chat_id: metadata.telegramId,
-                  parse_mode: 'MarkdownV2',
-                  text: `*Баланс пополнен 🎉*
-
-Текущий баланс:
-*Базовые запросы* _\\(GPT\\-3\\.5, GPT\\-4o\\-mini\\)_:
-⭐️ ${user.basicRequestsBalance}
-*PRO запросы* _\\(GPT\\-4o\\)_:
-🌟 ${user.proRequestsBalance}
-*Генерация изображений*:
-🖼️ ${user.imageGenerationBalance}
-
-_Благодарим за покупку\\!_`,
-                }),
-              },
-            );
-
-            if (!response.ok) {
-              const jsonData = await response.json();
-              throw new Error(
-                `Failed to send telegram message to user ${metadata.telegramId} | yookassaPaymentId ${id}: ${jsonData.description}`,
-              );
-            }
-          } catch (error) {
-            console.error(`Error in sending tg message`, error);
-          }
-
-          return res
-            .status(200)
-            .json({ message: 'Transaction with succeeded status saved' });
         }
 
         case 'payment.canceled': {
-          const totalAmountInt = parseFloat(amount.value);
-          if (isNaN(totalAmountInt)) {
-            return res.status(400).json({ error: 'Invalid amount' });
+          if (isPackageTransaction(metadata)) {
+            await handlePackageTransactionCanceled({
+              res,
+              id,
+              status,
+              amount,
+              metadata,
+              botApiKey: BOT_API_KEY,
+              details: body.object.cancellation_details,
+            });
+          } else if (isSubscriptionTransaction(metadata)) {
+            await handleSubscriptionTransactionCanceled({
+              res,
+              id,
+              status,
+              amount,
+              metadata,
+              paymentMethod: payment_method,
+              botApiKey: BOT_API_KEY,
+              details: body.object.cancellation_details,
+            });
+          } else {
+            throw new Error('Invalid metadata in payment.canceled');
           }
-          await YookassaTransaction.create({
-            telegramId: metadata.telegramId,
-            totalAmount: totalAmountInt,
-            packageName: metadata.packageName,
-            yookassaPaymentId: id,
-            status,
-          });
-
-          try {
-            const responseFromUser = await fetch(
-              `https://api.telegram.org/bot${BOT_API_KEY}/sendMessage`,
-              {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                  chat_id: metadata.telegramId,
-                  parse_mode: 'MarkdownV2',
-                  text: `*Кажется, что\\-то пошло не так 🙁*\nК сожалению, мы не смогли обработать Ваш платеж\\.\n\nПожалуйста, попробуйте ещё раз \\/topup или обратитесь в поддержку \\/support`,
-                }),
-              },
-            );
-
-            if (!responseFromUser.ok) {
-              const jsonData = await responseFromUser.json();
-              throw new Error(
-                `Failed to send telegram message to user ${metadata.telegramId} about canceled payment | yookassaPaymentId ${id}: ${jsonData.description}`,
-              );
-            }
-
-            const responseFromAdmin = await fetch(
-              `https://api.telegram.org/bot${BOT_API_KEY}/sendMessage`,
-              {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                  chat_id: process.env.ADMIN_TELEGRAM_ID,
-                  parse_mode: 'MarkdownV2',
-                  text: `Отмена платежа:
-*YookassaPaymentId*: ${id}
-*TgId*: ${metadata.telegramId}
-*Details*: ${JSON.stringify(body.object?.cancellation_details)}`,
-                }),
-              },
-            );
-
-            if (!responseFromAdmin.ok) {
-              const jsonData = await responseFromAdmin.json();
-              throw new Error(
-                `Failed to send telegram message to admin | yookassaPaymentId ${id}: ${jsonData.description}`,
-              );
-            }
-          } catch (error) {
-            console.error(`Error in sending tg message`, error);
-          }
-
-          return res
-            .status(200)
-            .json({ message: 'Transaction with canceled status saved' });
         }
 
         case 'refund.succeeded': {
-          await YookassaTransaction.create({
-            telegramId: metadata.telegramId,
-            totalAmount: amount.value,
-            packageName: metadata.packageName,
-            yookassaPaymentId: id,
-            status,
-          });
-
-          return res
-            .status(200)
-            .json({ message: 'Transaction with refund status saved' });
+          if (isPackageTransaction(metadata)) {
+            await PackageTransaction.create({
+              telegramId: metadata.telegramId,
+              totalAmount: amount.value,
+              packageName: metadata.packageName,
+              yookassaPaymentId: id,
+              status,
+            });
+          } else if (isSubscriptionTransaction(metadata)) {
+            await SubscriptionTransaction.create({
+              telegramId: metadata.telegramId,
+              totalAmount: amount.value,
+              subscriptionLevel: metadata.subscriptionLevel,
+              yookassaPaymentId: id,
+              yookassaPaymentMethodId: payment_method,
+              status,
+            });
+          } else {
+            throw new Error('Invalid metadata in refund.succeeded');
+          }
+          return res.status(200).json({ message: 'Transaction with refund status saved' });
         }
 
         default:

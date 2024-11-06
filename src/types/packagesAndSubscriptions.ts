@@ -8,3 +8,5 @@ export type PackageName =
   | 'combo1'
   | 'combo2'
   | 'combo3';
+
+export type SubscriptionLevel = 'FREE' | 'BASIC' | 'PRO' | 'ULTIMATE';
