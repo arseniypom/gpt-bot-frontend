@@ -1,5 +1,6 @@
 import { Schema, model } from 'mongoose';
 import { SubscriptionLevel } from '@/types/packagesAndSubscriptions';
+import { CancellationDetails } from '@/types';
 
 export interface SubscriptionTransaction {
   telegramId: number;
@@ -7,6 +8,7 @@ export interface SubscriptionTransaction {
   subscriptionLevel: SubscriptionLevel;
   yookassaPaymentId: string;
   yookassaPaymentMethodId: string;
+  cancellationDetails?: CancellationDetails;
   status: string;
   createdAt: Date;
 }
@@ -18,6 +20,7 @@ const subscriptionTransactionSchema: Schema<SubscriptionTransaction> =
     subscriptionLevel: { type: String, required: true },
     yookassaPaymentId: { type: String, required: true },
     yookassaPaymentMethodId: { type: String, required: true },
+    cancellationDetails: { type: Object },
     status: { type: String, required: true },
     createdAt: {
       type: Date,

@@ -1,4 +1,5 @@
 import {
+  CancellationDetails,
   PackageMetadata,
   PaymentStatus,
   SubscriptionMetadata,
@@ -117,7 +118,7 @@ export const handlePackageTransactionCanceled = async ({
   amount: { value: string };
   metadata: PackageMetadata;
   botApiKey?: string;
-  details: unknown;
+  details?: CancellationDetails;
 }) => {
   const totalAmountInt = parseFloat(amount.value);
   if (isNaN(totalAmountInt)) {
@@ -129,6 +130,7 @@ export const handlePackageTransactionCanceled = async ({
     packageName: metadata.packageName,
     yookassaPaymentId: id,
     status,
+    cancellationDetails: details,
   });
 
   if (botApiKey) {
@@ -229,14 +231,14 @@ export const handleSubscriptionTransactionSuccess = async ({
 
   user.subscriptionLevel = metadata.subscriptionLevel;
   user.yookassaPaymentMethodId = paymentMethod.id;
-  if (metadata.daysDuration) {
+  if (metadata.subscriptionDuration.days) {
     user.subscriptionExpiry = dayjs()
-      .add(metadata.daysDuration, 'day')
+      .add(metadata.subscriptionDuration.days, 'day')
       .toDate();
   }
-  if (metadata.monthsDuration) {
+  if (metadata.subscriptionDuration.months) {
     user.subscriptionExpiry = dayjs()
-      .add(metadata.monthsDuration, 'month')
+      .add(metadata.subscriptionDuration.months, 'month')
       .toDate();
   }
 
@@ -309,7 +311,7 @@ export const handleSubscriptionTransactionCanceled = async ({
   metadata: SubscriptionMetadata;
   paymentMethod: SubscriptionPaymentMethod;
   botApiKey?: string;
-  details: unknown;
+  details?: CancellationDetails;
 }) => {
   const totalAmountInt = parseFloat(amount.value);
   if (isNaN(totalAmountInt)) {
@@ -322,6 +324,7 @@ export const handleSubscriptionTransactionCanceled = async ({
     yookassaPaymentId: id,
     yookassaPaymentMethodId: paymentMethod.id,
     status,
+    cancellationDetails: details,
   });
 
   if (botApiKey) {

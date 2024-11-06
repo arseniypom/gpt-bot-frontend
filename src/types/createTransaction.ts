@@ -20,8 +20,10 @@ export interface SubscriptionMetadata {
   basicRequestsPerDay: number;
   proRequestsPerDay?: number;
   imageGenerationPerDay?: number;
-  daysDuration?: number;
-  monthsDuration?: number;
+  subscriptionDuration: {
+    days?: number;
+    months?: number;
+  };
 }
 
 export interface SubscriptionPaymentMethod {
@@ -40,12 +42,14 @@ export interface CreateTransactionBody {
     status: PaymentStatus;
     amount: { value: string; currency: 'RUB' };
     metadata: PackageMetadata | SubscriptionMetadata;
-    cancellation_details?: {
-      party: string;
-      reason: string;
-    };
+    cancellation_details?: CancellationDetails;
     payment_method: SubscriptionPaymentMethod;
   };
+}
+
+export interface CancellationDetails {
+  party?: string;
+  reason?: string;
 }
 
 export const isValidCreateTransactionBody = (
