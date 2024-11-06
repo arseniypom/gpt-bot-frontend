@@ -218,7 +218,7 @@ export const handleSubscriptionTransactionSuccess = async ({
     totalAmount: totalAmountInt,
     subscriptionLevel: metadata.subscriptionLevel,
     yookassaPaymentId: id,
-    yookassaPaymentMethodId: paymentMethod,
+    yookassaPaymentMethodId: paymentMethod.id,
     status,
   });
 
@@ -319,7 +319,7 @@ export const handleSubscriptionTransactionCanceled = async ({
     totalAmount: totalAmountInt,
     subscriptionLevel: metadata.subscriptionLevel,
     yookassaPaymentId: id,
-    yookassaPaymentMethodId: paymentMethod,
+    yookassaPaymentMethodId: paymentMethod.id,
     status,
   });
 

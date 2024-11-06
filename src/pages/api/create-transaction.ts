@@ -118,7 +118,7 @@ export default async function handler(
               totalAmount: amount.value,
               subscriptionLevel: metadata.subscriptionLevel,
               yookassaPaymentId: id,
-              yookassaPaymentMethodId: payment_method,
+              yookassaPaymentMethodId: payment_method.id,
               status,
             });
           } else {
