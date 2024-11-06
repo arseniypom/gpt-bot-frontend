@@ -54,8 +54,6 @@ export default async function handler(
             status,
           });
 
-          console.log('BODY:', body);
-
           const user = await User.findOne({ telegramId: metadata.telegramId });
           if (!user) {
             return res.status(404).json({ error: 'User not found' });

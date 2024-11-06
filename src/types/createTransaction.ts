@@ -16,9 +16,9 @@ export interface CreateTransactionBody {
     metadata: {
       telegramId: string;
       packageName: PackageName;
-      basicRequestsBalance: string | undefined;
-      proRequestsBalance: string | undefined;
-      imageGenerationBalance: string | undefined;
+      basicRequestsBalance?: string;
+      proRequestsBalance?: string;
+      imageGenerationBalance?: string;
     };
     cancellation_details?: {
       party: string;
