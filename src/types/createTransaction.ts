@@ -20,10 +20,7 @@ export interface SubscriptionMetadata {
   basicRequestsPerDay: number;
   proRequestsPerDay?: number;
   imageGenerationPerDay?: number;
-  subscriptionDuration: {
-    days?: number;
-    months?: number;
-  };
+  subscriptionDuration: string;
 }
 
 export interface SubscriptionPaymentMethod {

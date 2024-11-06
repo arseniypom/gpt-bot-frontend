@@ -231,14 +231,16 @@ export const handleSubscriptionTransactionSuccess = async ({
 
   user.subscriptionLevel = metadata.subscriptionLevel;
   user.yookassaPaymentMethodId = paymentMethod.id;
-  if (metadata.subscriptionDuration.days) {
+  const subscriptionDuration = JSON.parse(metadata.subscriptionDuration);
+
+  if (subscriptionDuration.days) {
     user.subscriptionExpiry = dayjs()
-      .add(metadata.subscriptionDuration.days, 'day')
+      .add(subscriptionDuration.days, 'day')
       .toDate();
   }
-  if (metadata.subscriptionDuration.months) {
+  if (subscriptionDuration.months) {
     user.subscriptionExpiry = dayjs()
-      .add(metadata.subscriptionDuration.months, 'month')
+      .add(subscriptionDuration.months, 'month')
       .toDate();
   }
 
