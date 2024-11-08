@@ -1,3 +1,4 @@
+import { SubscriptionDuration } from '@/types';
 import { SubscriptionLevel } from '@/types/packagesAndSubscriptions';
 import { Schema, model } from 'mongoose';
 
@@ -13,7 +14,10 @@ export interface User {
   proRequestsBalanceLeftToday: number;
   imageGenerationBalanceLeftToday: number;
   subscriptionLevel: SubscriptionLevel;
+  newSubscriptionLevel: SubscriptionLevel | null;
   subscriptionExpiry: Date | null;
+  subscriptionDuration?: SubscriptionDuration;
+  unsubscribeReason: string | null;
   yookassaPaymentMethodId: string | null;
   createdAt: Date;
   updatedAt: Date;
@@ -58,8 +62,19 @@ const userSchema: Schema<User> = new Schema({
     type: String,
     required: true,
   },
+  newSubscriptionLevel: {
+    type: String,
+  },
   subscriptionExpiry: {
     type: Date,
+    default: null,
+  },
+  subscriptionDuration: {
+    type: String,
+    default: null,
+  },
+  unsubscribeReason: {
+    type: String,
     default: null,
   },
   yookassaPaymentMethodId: {

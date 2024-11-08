@@ -20,8 +20,11 @@ export interface SubscriptionMetadata {
   basicRequestsPerDay: number;
   proRequestsPerDay?: number;
   imageGenerationPerDay?: number;
-  subscriptionDuration: string;
+  subscriptionDuration: SubscriptionDuration;
 }
+
+// It's a stringified object of type { days?: number; months?: number }
+export type SubscriptionDuration = string;
 
 export interface SubscriptionPaymentMethod {
   type: string;
