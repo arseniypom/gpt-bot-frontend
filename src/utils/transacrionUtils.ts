@@ -234,6 +234,8 @@ export const handleSubscriptionTransactionSuccess = async ({
   user.yookassaPaymentMethodId = paymentMethod.id;
   let subscriptionDuration = JSON.parse(metadata.subscriptionDuration);
   let isValidDuration = true;
+  console.log('metadata.subscriptionDuration:', metadata.subscriptionDuration);
+  console.log('subscriptionDuration:', subscriptionDuration);
 
   if (!isValidSubscriptionDuration(subscriptionDuration)) {
     isValidDuration = false;
@@ -243,11 +245,14 @@ export const handleSubscriptionTransactionSuccess = async ({
   }
 
   if (subscriptionDuration.days) {
+    console.log('days');
+
     user.subscriptionExpiry = dayjs()
       .add(subscriptionDuration.days, 'day')
       .toDate();
   }
   if (subscriptionDuration.months) {
+    console.log('months');
     user.subscriptionExpiry = dayjs()
       .add(subscriptionDuration.months, 'month')
       .toDate();
