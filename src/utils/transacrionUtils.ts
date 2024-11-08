@@ -257,7 +257,7 @@ export const handleSubscriptionTransactionSuccess = async ({
       .add(subscriptionDuration.months, 'month')
       .toDate();
   }
-  user.subscriptionDuration = metadata.subscriptionDuration;
+  user.subscriptionDuration = subscriptionDuration;
   user.basicRequestsBalanceLeftToday += Number(metadata.basicRequestsPerDay);
   if (metadata.proRequestsPerDay) {
     user.proRequestsBalanceLeftToday += Number(metadata.proRequestsPerDay);
