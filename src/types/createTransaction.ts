@@ -20,11 +20,12 @@ export interface SubscriptionMetadata {
   basicRequestsPerDay: number;
   proRequestsPerDay?: number;
   imageGenerationPerDay?: number;
-  subscriptionDuration: SubscriptionDuration;
+  subscriptionDuration: SubscriptionDurationStringified;
 }
 
 // It's a stringified object of type { days?: number; months?: number }
-export type SubscriptionDuration = string;
+export type SubscriptionDurationStringified = string;
+export type SubscriptionDuration = { days?: number; months?: number };
 
 export interface SubscriptionPaymentMethod {
   type: string;
@@ -77,4 +78,14 @@ export const isSubscriptionTransaction = (
   metadata: PackageMetadata | SubscriptionMetadata,
 ): metadata is SubscriptionMetadata => {
   return 'subscriptionLevel' in metadata;
+};
+
+export const isValidSubscriptionDuration = (
+  duration: unknown,
+): duration is SubscriptionDuration => {
+  return (
+    typeof duration === 'object' &&
+    duration !== null &&
+    ('days' in duration || 'months' in duration)
+  );
 };

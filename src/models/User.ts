@@ -1,4 +1,4 @@
-import { SubscriptionDuration } from '@/types';
+import { SubscriptionDurationStringified } from '@/types';
 import { SubscriptionLevel } from '@/types/packagesAndSubscriptions';
 import { Schema, model } from 'mongoose';
 
@@ -16,7 +16,7 @@ export interface User {
   subscriptionLevel: SubscriptionLevel;
   newSubscriptionLevel: SubscriptionLevel | null;
   subscriptionExpiry: Date | null;
-  subscriptionDuration?: SubscriptionDuration;
+  subscriptionDuration?: SubscriptionDurationStringified;
   unsubscribeReason: string | null;
   yookassaPaymentMethodId: string | null;
   createdAt: Date;

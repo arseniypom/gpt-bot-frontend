@@ -1,5 +1,6 @@
 import {
   CancellationDetails,
+  isValidSubscriptionDuration,
   PackageMetadata,
   PaymentStatus,
   SubscriptionMetadata,
@@ -231,7 +232,15 @@ export const handleSubscriptionTransactionSuccess = async ({
 
   user.subscriptionLevel = metadata.subscriptionLevel;
   user.yookassaPaymentMethodId = paymentMethod.id;
-  const subscriptionDuration = JSON.parse(metadata.subscriptionDuration);
+  let subscriptionDuration = JSON.parse(metadata.subscriptionDuration);
+  let isValidDuration = true;
+
+  if (!isValidSubscriptionDuration(subscriptionDuration)) {
+    isValidDuration = false;
+    subscriptionDuration = {
+      months: 1,
+    };
+  }
 
   if (subscriptionDuration.days) {
     user.subscriptionExpiry = dayjs()
@@ -311,6 +320,11 @@ _Благодарим за покупку\\!_`,
         },
       );
 
+      if (!isValidDuration) {
+        console.error(
+          `Invalid subscription duration: ${metadata.subscriptionDuration} | telegramId ${metadata.telegramId}`,
+        );
+      }
       if (!response.ok) {
         const jsonData = await response.json();
         throw new Error(
