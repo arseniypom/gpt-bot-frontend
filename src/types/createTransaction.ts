@@ -17,9 +17,10 @@ export interface PackageMetadata {
 export interface SubscriptionMetadata {
   telegramId: string;
   subscriptionLevel: SubscriptionLevel;
-  basicRequestsPerDay: number;
-  proRequestsPerDay?: number;
-  imageGenerationPerDay?: number;
+  basicRequestsPerDay?: number;
+  basicRequestsPerWeek?: number;
+  proRequestsPerMonth?: number;
+  imageGenerationPerMonth?: number;
   subscriptionDuration: SubscriptionDurationStringified;
 }
 

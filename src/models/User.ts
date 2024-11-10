@@ -1,5 +1,6 @@
 import { SubscriptionDuration } from '@/types';
 import { SubscriptionLevel } from '@/types/packagesAndSubscriptions';
+import dayjs from 'dayjs';
 import { Schema, model } from 'mongoose';
 
 export interface User {
@@ -10,15 +11,18 @@ export interface User {
   proRequestsBalance: number;
   imageGenerationBalance: number;
   selectedModel: string;
-  basicRequestsBalanceLeftToday: number;
-  proRequestsBalanceLeftToday: number;
-  imageGenerationBalanceLeftToday: number;
+  basicRequestsLeftThisWeek: number;
+  basicRequestsLeftToday: number;
+  proRequestsLeftThisMonths: number;
+  imageGenerationLeftThisMonths: number;
   subscriptionLevel: SubscriptionLevel;
   newSubscriptionLevel: SubscriptionLevel | null;
   subscriptionExpiry: Date | null;
+  weeklyRequestsExpiry: Date | null;
   subscriptionDuration?: SubscriptionDuration | null;
   unsubscribeReason: string | null;
   yookassaPaymentMethodId: string | null;
+  coinsBalance: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -46,15 +50,19 @@ const userSchema: Schema<User> = new Schema({
     type: String,
     required: true,
   },
-  basicRequestsBalanceLeftToday: {
+  basicRequestsLeftThisWeek: {
     type: Number,
     required: true,
   },
-  proRequestsBalanceLeftToday: {
+  basicRequestsLeftToday: {
     type: Number,
     required: true,
   },
-  imageGenerationBalanceLeftToday: {
+  proRequestsLeftThisMonths: {
+    type: Number,
+    required: true,
+  },
+  imageGenerationLeftThisMonths: {
     type: Number,
     required: true,
   },
@@ -69,6 +77,10 @@ const userSchema: Schema<User> = new Schema({
     type: Date,
     default: null,
   },
+  weeklyRequestsExpiry: {
+    type: Date,
+    default: dayjs().add(7, 'day').toDate(),
+  },
   subscriptionDuration: {
     type: Object,
     default: null,
@@ -80,6 +92,10 @@ const userSchema: Schema<User> = new Schema({
   yookassaPaymentMethodId: {
     type: String,
     default: null,
+  },
+  coinsBalance: {
+    type: Number,
+    default: 0,
   },
   createdAt: {
     type: Date,

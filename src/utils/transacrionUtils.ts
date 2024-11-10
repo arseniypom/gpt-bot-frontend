@@ -234,8 +234,6 @@ export const handleSubscriptionTransactionSuccess = async ({
   user.yookassaPaymentMethodId = paymentMethod.id;
   let subscriptionDuration = JSON.parse(metadata.subscriptionDuration);
   let isValidDuration = true;
-  console.log('metadata.subscriptionDuration:', metadata.subscriptionDuration);
-  console.log('subscriptionDuration:', subscriptionDuration);
 
   if (!isValidSubscriptionDuration(subscriptionDuration)) {
     isValidDuration = false;
@@ -245,27 +243,22 @@ export const handleSubscriptionTransactionSuccess = async ({
   }
 
   if (subscriptionDuration.days) {
-    console.log('days');
-
     user.subscriptionExpiry = dayjs()
       .add(subscriptionDuration.days, 'day')
       .toDate();
   }
   if (subscriptionDuration.months) {
-    console.log('months');
     user.subscriptionExpiry = dayjs()
       .add(subscriptionDuration.months, 'month')
       .toDate();
   }
   user.subscriptionDuration = subscriptionDuration;
-  user.basicRequestsBalanceLeftToday += Number(metadata.basicRequestsPerDay);
-  if (metadata.proRequestsPerDay) {
-    user.proRequestsBalanceLeftToday += Number(metadata.proRequestsPerDay);
+  user.basicRequestsLeftToday = Number(metadata.basicRequestsPerDay);
+  if (metadata.proRequestsPerMonth) {
+    user.proRequestsLeftThisMonths = Number(metadata.proRequestsPerMonth);
   }
-  if (metadata.imageGenerationPerDay) {
-    user.imageGenerationBalanceLeftToday += Number(
-      metadata.imageGenerationPerDay,
-    );
+  if (metadata.imageGenerationPerMonth) {
+    user.imageGenerationLeftThisMonths = Number(metadata.imageGenerationPerMonth);
   }
   user.updatedAt = new Date();
   await user.save();
