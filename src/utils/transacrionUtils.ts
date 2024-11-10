@@ -47,15 +47,7 @@ export const handlePackageTransactionSuccess = async ({
   if (!user) {
     return res.status(404).json({ error: 'User not found' });
   }
-  if (metadata.basicRequestsBalance) {
-    user.basicRequestsBalance += Number(metadata.basicRequestsBalance);
-  }
-  if (metadata.proRequestsBalance) {
-    user.proRequestsBalance += Number(metadata.proRequestsBalance);
-  }
-  if (metadata.imageGenerationBalance) {
-    user.imageGenerationBalance += Number(metadata.imageGenerationBalance);
-  }
+  user.tokensBalance += Number(metadata.tokensNumber);
   user.updatedAt = new Date();
   await user.save();
 
@@ -73,13 +65,7 @@ export const handlePackageTransactionSuccess = async ({
             parse_mode: 'MarkdownV2',
             text: `*Баланс пополнен 🎉*
 
-Текущий баланс:
-*Базовые запросы* _\\(GPT\\-3\\.5, GPT\\-4o\\-mini\\)_:
-⭐️ ${user.basicRequestsBalance}
-*PRO запросы* _\\(GPT\\-4o\\)_:
-🌟 ${user.proRequestsBalance}
-*Генерация изображений*:
-🖼️ ${user.imageGenerationBalance}
+Текущий баланс токенов: 🪙 *${metadata.tokensNumber}*
 
 _Благодарим за покупку\\!_`,
           }),
@@ -253,12 +239,15 @@ export const handleSubscriptionTransactionSuccess = async ({
       .toDate();
   }
   user.subscriptionDuration = subscriptionDuration;
+  user.basicRequestsLeftThisWeek = Number(metadata.basicRequestsPerWeek);
   user.basicRequestsLeftToday = Number(metadata.basicRequestsPerDay);
   if (metadata.proRequestsPerMonth) {
     user.proRequestsLeftThisMonths = Number(metadata.proRequestsPerMonth);
   }
   if (metadata.imageGenerationPerMonth) {
-    user.imageGenerationLeftThisMonths = Number(metadata.imageGenerationPerMonth);
+    user.imageGenerationLeftThisMonths = Number(
+      metadata.imageGenerationPerMonth,
+    );
   }
   user.updatedAt = new Date();
   await user.save();

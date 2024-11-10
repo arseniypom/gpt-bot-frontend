@@ -22,7 +22,7 @@ export interface User {
   subscriptionDuration?: SubscriptionDuration | null;
   unsubscribeReason: string | null;
   yookassaPaymentMethodId: string | null;
-  coinsBalance: number;
+  tokensBalance: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -93,7 +93,7 @@ const userSchema: Schema<User> = new Schema({
     type: String,
     default: null,
   },
-  coinsBalance: {
+  tokensBalance: {
     type: Number,
     default: 0,
   },

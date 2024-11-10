@@ -9,9 +9,7 @@ export type PaymentStatus = 'succeeded' | 'canceled';
 export interface PackageMetadata {
   telegramId: string;
   packageName: PackageName;
-  basicRequestsBalance?: string;
-  proRequestsBalance?: string;
-  imageGenerationBalance?: string;
+  tokensNumber: number;
 }
 
 export interface SubscriptionMetadata {
