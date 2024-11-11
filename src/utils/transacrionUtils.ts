@@ -249,6 +249,7 @@ export const handleSubscriptionTransactionSuccess = async ({
       metadata.imageGenerationPerMonth,
     );
   }
+  user.weeklyRequestsExpiry = null;
   user.updatedAt = new Date();
   await user.save();
 

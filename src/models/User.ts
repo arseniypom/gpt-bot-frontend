@@ -21,6 +21,7 @@ export interface User {
   weeklyRequestsExpiry: Date | null;
   subscriptionDuration?: SubscriptionDuration | null;
   unsubscribeReason: string | null;
+  lastUnsubscribeDate: Date | null;
   yookassaPaymentMethodId: string | null;
   tokensBalance: number;
   createdAt: Date;
@@ -79,7 +80,7 @@ const userSchema: Schema<User> = new Schema({
   },
   weeklyRequestsExpiry: {
     type: Date,
-    default: dayjs().add(7, 'day').toDate(),
+    default: () => dayjs().add(7, 'day').toDate(),
   },
   subscriptionDuration: {
     type: Object,
@@ -87,6 +88,10 @@ const userSchema: Schema<User> = new Schema({
   },
   unsubscribeReason: {
     type: String,
+    default: null,
+  },
+  lastUnsubscribeDate: {
+    type: Date,
     default: null,
   },
   yookassaPaymentMethodId: {
