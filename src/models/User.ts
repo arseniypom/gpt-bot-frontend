@@ -34,18 +34,15 @@ const userSchema: Schema<User> = new Schema({
   userName: { type: String },
   basicRequestsBalance: {
     type: Number,
-    default: 15,
-    required: true,
+    default: 0,
   },
   proRequestsBalance: {
     type: Number,
-    default: 5,
-    required: true,
+    default: 0,
   },
   imageGenerationBalance: {
     type: Number,
-    default: 3,
-    required: true,
+    default: 0,
   },
   selectedModel: {
     type: String,
