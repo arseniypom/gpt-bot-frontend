@@ -242,10 +242,10 @@ export const handleSubscriptionTransactionSuccess = async ({
   user.basicRequestsLeftThisWeek = Number(metadata.basicRequestsPerWeek);
   user.basicRequestsLeftToday = Number(metadata.basicRequestsPerDay);
   if (metadata.proRequestsPerMonth) {
-    user.proRequestsLeftThisMonths = Number(metadata.proRequestsPerMonth);
+    user.proRequestsLeftThisMonth = Number(metadata.proRequestsPerMonth);
   }
   if (metadata.imageGenerationPerMonth) {
-    user.imageGenerationLeftThisMonths = Number(
+    user.imageGenerationLeftThisMonth = Number(
       metadata.imageGenerationPerMonth,
     );
   }
