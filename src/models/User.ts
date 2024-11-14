@@ -8,6 +8,7 @@ export interface User {
   firstName?: string;
   userName?: string;
   selectedModel: string;
+  chatMode: string;
   basicRequestsLeftThisWeek: number;
   basicRequestsLeftToday: number;
   proRequestsLeftThisMonth: number;
@@ -30,6 +31,10 @@ const userSchema: Schema<User> = new Schema({
   firstName: { type: String },
   userName: { type: String },
   selectedModel: {
+    type: String,
+    required: true,
+  },
+  chatMode: {
     type: String,
     required: true,
   },
