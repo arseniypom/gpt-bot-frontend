@@ -22,6 +22,7 @@ export interface User {
   lastUnsubscribeDate: Date | null;
   yookassaPaymentMethodId: string | null;
   tokensBalance: number;
+  userStage: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -88,6 +89,9 @@ const userSchema: Schema<User> = new Schema({
   tokensBalance: {
     type: Number,
     default: 0,
+  },
+  userStage: {
+    type: String,
   },
   createdAt: {
     type: Date,
