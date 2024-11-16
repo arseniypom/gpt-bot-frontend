@@ -23,6 +23,9 @@ export interface User {
   yookassaPaymentMethodId: string | null;
   tokensBalance: number;
   userStage: string;
+  basicReqsMade: number;
+  proReqsMade: number;
+  imgGensMade: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -92,6 +95,15 @@ const userSchema: Schema<User> = new Schema({
   },
   userStage: {
     type: String,
+  },
+  basicReqsMade: {
+    type: Number,
+  },
+  proReqsMade: {
+    type: Number,
+  },
+  imgGensMade: {
+    type: Number,
   },
   createdAt: {
     type: Date,
