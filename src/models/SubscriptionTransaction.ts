@@ -17,7 +17,7 @@ export interface SubscriptionTransaction {
 const subscriptionTransactionSchema: Schema<SubscriptionTransaction> =
   new Schema({
     telegramId: { type: Number, required: true },
-    email: { type: String, required: true },
+    email: { type: String },
     totalAmount: { type: Number },
     subscriptionLevel: { type: String, required: true },
     yookassaPaymentId: { type: String, required: true },

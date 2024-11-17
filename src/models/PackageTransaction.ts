@@ -14,7 +14,7 @@ export interface PackageTransaction {
 
 const packageTransactionSchema: Schema<PackageTransaction> = new Schema({
   telegramId: { type: Number, required: true },
-  email: { type: String, required: true },
+  email: { type: String },
   totalAmount: { type: Number },
   packageName: { type: String, required: true },
   yookassaPaymentId: { type: String, required: true },
