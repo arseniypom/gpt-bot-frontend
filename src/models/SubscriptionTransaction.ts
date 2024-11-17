@@ -4,6 +4,7 @@ import { CancellationDetails } from '@/types';
 
 export interface SubscriptionTransaction {
   telegramId: number;
+  email: string;
   totalAmount: number;
   subscriptionLevel: SubscriptionLevel;
   yookassaPaymentId: string;
@@ -16,6 +17,7 @@ export interface SubscriptionTransaction {
 const subscriptionTransactionSchema: Schema<SubscriptionTransaction> =
   new Schema({
     telegramId: { type: Number, required: true },
+    email: { type: String, required: true },
     totalAmount: { type: Number },
     subscriptionLevel: { type: String, required: true },
     yookassaPaymentId: { type: String, required: true },

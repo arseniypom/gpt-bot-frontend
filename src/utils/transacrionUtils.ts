@@ -12,6 +12,7 @@ import User from '@/models/User';
 import { NextApiResponse } from 'next';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
+import { SubscriptionLevels } from '@/types';
 
 dayjs.extend(duration);
 
@@ -32,11 +33,13 @@ export const handlePackageTransactionSuccess = async ({
 }) => {
   const totalAmountInt = parseFloat(amount.value);
   if (isNaN(totalAmountInt)) {
-    res.status(400).json({ error: 'Invalid amount' });
-    throw new Error('Invalid amount');
+    throw new Error(
+      `handlePackageTransactionSuccess: Invalid amount (${amount.value}), yookassaPaymentId: ${id}, telegramId: ${metadata.telegramId}`,
+    );
   }
   await PackageTransaction.create({
     telegramId: metadata.telegramId,
+    email: metadata.email,
     totalAmount: totalAmountInt,
     packageName: metadata.packageName,
     yookassaPaymentId: id,
@@ -48,6 +51,7 @@ export const handlePackageTransactionSuccess = async ({
     return res.status(404).json({ error: 'User not found' });
   }
   user.tokensBalance += Number(metadata.tokensNumber);
+  user.email = metadata.email;
   user.updatedAt = new Date();
   await user.save();
 
@@ -65,7 +69,8 @@ export const handlePackageTransactionSuccess = async ({
             parse_mode: 'MarkdownV2',
             text: `*Баланс пополнен 🎉*
 
-Текущий баланс токенов: 🪙 *${metadata.tokensNumber}*
+Добавлено 🪙 *${metadata.tokensNumber}* токенов
+Текущий баланс: 🪙 *${user.tokensBalance}*
 
 _Благодарим за покупку\\!_`,
           }),
@@ -82,7 +87,7 @@ _Благодарим за покупку\\!_`,
       console.error(`Error in sending tg message`, error);
     }
   } else {
-    throw new Error('handlePackageTransaction:Bot API key is not provided');
+    throw new Error('handlePackageTransactionSuccess:Bot API key is not provided');
   }
 
   return res
@@ -113,12 +118,23 @@ export const handlePackageTransactionCanceled = async ({
   }
   await PackageTransaction.create({
     telegramId: metadata.telegramId,
+    email: metadata.email,
     totalAmount: totalAmountInt,
     packageName: metadata.packageName,
     yookassaPaymentId: id,
     status,
     cancellationDetails: details,
   });
+
+  const user = await User.findOne({ telegramId: metadata.telegramId });
+  if (!user) {
+    throw new Error(
+      `handlePackageTransactionCanceled: User not found, yookassaPaymentId: ${id}, telegramId: ${metadata.telegramId}`,
+    );
+  }
+  user.email = metadata.email;
+  user.updatedAt = new Date();
+  await user.save();
 
   if (botApiKey) {
     try {
@@ -172,7 +188,7 @@ export const handlePackageTransactionCanceled = async ({
       console.error(`Error in sending tg message`, error);
     }
   } else {
-    throw new Error('handlePackageTransaction:Bot API key is not provided');
+    throw new Error('handlePackageTransactionCanceled: Bot API key is not provided');
   }
 
   return res
@@ -199,11 +215,13 @@ export const handleSubscriptionTransactionSuccess = async ({
 }) => {
   const totalAmountInt = parseFloat(amount.value);
   if (isNaN(totalAmountInt)) {
-    res.status(400).json({ error: 'Invalid amount' });
-    throw new Error('Invalid amount');
+    throw new Error(
+      `handleSubscriptionTransactionSuccess: Invalid amount (${amount.value}), yookassaPaymentId: ${id}, telegramId: ${metadata.telegramId}`,
+    );
   }
   await SubscriptionTransaction.create({
     telegramId: metadata.telegramId,
+    email: metadata.email,
     totalAmount: totalAmountInt,
     subscriptionLevel: metadata.subscriptionLevel,
     yookassaPaymentId: id,
@@ -220,6 +238,11 @@ export const handleSubscriptionTransactionSuccess = async ({
   user.yookassaPaymentMethodId = paymentMethod.id;
   let subscriptionDuration = JSON.parse(metadata.subscriptionDuration);
   let isValidDuration = true;
+
+  if (metadata.subscriptionLevel === SubscriptionLevels.OPTIMUM_TRIAL) {
+    user.newSubscriptionLevel = SubscriptionLevels.OPTIMUM;
+    user.hasActivatedTrial = true;
+  }
 
   if (!isValidSubscriptionDuration(subscriptionDuration)) {
     isValidDuration = false;
@@ -250,6 +273,7 @@ export const handleSubscriptionTransactionSuccess = async ({
     );
   }
   user.weeklyRequestsExpiry = null;
+  user.email = metadata.email;
   user.updatedAt = new Date();
   await user.save();
 
@@ -297,7 +321,7 @@ _Благодарим за покупку\\!_`,
       );
 
       if (!isValidDuration) {
-        console.error(
+        throw new Error(
           `Invalid subscription duration: ${metadata.subscriptionDuration} | telegramId ${metadata.telegramId}`,
         );
       }
@@ -308,10 +332,10 @@ _Благодарим за покупку\\!_`,
         );
       }
     } catch (error) {
-      console.error(`Error in sending tg message`, error);
+      throw new Error(`Error in sending tg message`, { cause: error });
     }
   } else {
-    throw new Error('handlePackageTransaction:Bot API key is not provided');
+    throw new Error('handleSubscriptionTransactionSuccess:Bot API key is not provided');
   }
 
   return res
@@ -340,10 +364,13 @@ export const handleSubscriptionTransactionCanceled = async ({
 }) => {
   const totalAmountInt = parseFloat(amount.value);
   if (isNaN(totalAmountInt)) {
-    return res.status(400).json({ error: 'Invalid amount' });
+    throw new Error(
+      `handleSubscriptionTransactionCanceled: Invalid amount (${amount.value}), yookassaPaymentId: ${id}, telegramId: ${metadata.telegramId}`,
+    );
   }
   await SubscriptionTransaction.create({
     telegramId: metadata.telegramId,
+    email: metadata.email,
     totalAmount: totalAmountInt,
     subscriptionLevel: metadata.subscriptionLevel,
     yookassaPaymentId: id,
@@ -351,6 +378,14 @@ export const handleSubscriptionTransactionCanceled = async ({
     status,
     cancellationDetails: details,
   });
+
+  const user = await User.findOne({ telegramId: metadata.telegramId });
+  if (!user) {
+    throw new Error('handlePackageTransactionCanceled: User not found');
+  }
+  user.email = metadata.email;
+  user.updatedAt = new Date();
+  await user.save();
 
   if (botApiKey) {
     try {
@@ -404,7 +439,7 @@ export const handleSubscriptionTransactionCanceled = async ({
       console.error(`Error in sending tg message`, error);
     }
   } else {
-    throw new Error('handlePackageTransaction:Bot API key is not provided');
+    throw new Error('handlePackageTransactionCanceled:Bot API key is not provided');
   }
 
   return res

@@ -3,6 +3,7 @@ import { Schema, model } from 'mongoose';
 
 export interface PackageTransaction {
   telegramId: number;
+  email: string;
   totalAmount: number;
   packageName: string;
   yookassaPaymentId: string;
@@ -13,6 +14,7 @@ export interface PackageTransaction {
 
 const packageTransactionSchema: Schema<PackageTransaction> = new Schema({
   telegramId: { type: Number, required: true },
+  email: { type: String, required: true },
   totalAmount: { type: Number },
   packageName: { type: String, required: true },
   yookassaPaymentId: { type: String, required: true },

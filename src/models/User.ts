@@ -7,12 +7,14 @@ export interface User {
   telegramId: number;
   firstName?: string;
   userName?: string;
+  email?: string;
   selectedModel: string;
   chatMode: string;
   basicRequestsLeftThisWeek: number;
   basicRequestsLeftToday: number;
   proRequestsLeftThisMonth: number;
   imageGenerationLeftThisMonth: number;
+  hasActivatedTrial: boolean;
   subscriptionLevel: SubscriptionLevel;
   newSubscriptionLevel: SubscriptionLevel | null;
   subscriptionExpiry: Date | null;
@@ -34,6 +36,7 @@ const userSchema: Schema<User> = new Schema({
   telegramId: { type: Number, unique: true, required: true },
   firstName: { type: String },
   userName: { type: String },
+  email: { type: String },
   selectedModel: {
     type: String,
     required: true,
@@ -57,6 +60,9 @@ const userSchema: Schema<User> = new Schema({
   imageGenerationLeftThisMonth: {
     type: Number,
     required: true,
+  },
+  hasActivatedTrial: {
+    type: Boolean,
   },
   subscriptionLevel: {
     type: String,

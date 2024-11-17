@@ -1,4 +1,4 @@
-import { PackageName, SubscriptionLevel } from './packagesAndSubscriptions';
+import { TokenPackageName, SubscriptionLevel } from './packagesAndSubscriptions';
 
 type PaymentEvent =
   | 'payment.succeeded'
@@ -8,12 +8,14 @@ export type PaymentStatus = 'succeeded' | 'canceled';
 
 export interface PackageMetadata {
   telegramId: string;
-  packageName: PackageName;
+  email: string;
+  packageName: TokenPackageName;
   tokensNumber: number;
 }
 
 export interface SubscriptionMetadata {
   telegramId: string;
+  email: string;
   subscriptionLevel: SubscriptionLevel;
   basicRequestsPerDay?: number;
   basicRequestsPerWeek?: number;
