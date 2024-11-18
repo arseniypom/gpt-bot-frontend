@@ -245,7 +245,6 @@ export const handleSubscriptionTransactionSuccess = async ({
 
   if (metadata.subscriptionLevel === SubscriptionLevels.OPTIMUM_TRIAL) {
     user.newSubscriptionLevel = SubscriptionLevels.OPTIMUM;
-    user.hasActivatedTrial = true;
   }
 
   if (!isValidSubscriptionDuration(subscriptionDuration)) {
@@ -277,6 +276,7 @@ export const handleSubscriptionTransactionSuccess = async ({
     );
   }
   user.weeklyRequestsExpiry = null;
+  user.canActivateTrial = false;
   user.email = metadata.email;
   user.updatedAt = new Date();
   await user.save();

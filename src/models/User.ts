@@ -14,7 +14,7 @@ export interface User {
   basicRequestsLeftToday: number;
   proRequestsLeftThisMonth: number;
   imageGenerationLeftThisMonth: number;
-  hasActivatedTrial: boolean;
+  canActivateTrial: boolean;
   subscriptionLevel: SubscriptionLevel;
   newSubscriptionLevel: SubscriptionLevel | null;
   subscriptionExpiry: Date | null;
@@ -61,7 +61,7 @@ const userSchema: Schema<User> = new Schema({
     type: Number,
     required: true,
   },
-  hasActivatedTrial: {
+  canActivateTrial: {
     type: Boolean,
   },
   subscriptionLevel: {
