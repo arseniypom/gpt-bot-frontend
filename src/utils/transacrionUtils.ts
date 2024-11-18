@@ -12,7 +12,7 @@ import User from '@/models/User';
 import { NextApiResponse } from 'next';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
-import { SubscriptionLevels } from '@/types';
+import { SubscriptionLevels, SubscriptionLevelsLabels } from '@/types';
 
 dayjs.extend(duration);
 
@@ -87,7 +87,9 @@ _Благодарим за покупку\\!_`,
       console.error(`Error in sending tg message`, error);
     }
   } else {
-    throw new Error('handlePackageTransactionSuccess:Bot API key is not provided');
+    throw new Error(
+      'handlePackageTransactionSuccess:Bot API key is not provided',
+    );
   }
 
   return res
@@ -188,7 +190,9 @@ export const handlePackageTransactionCanceled = async ({
       console.error(`Error in sending tg message`, error);
     }
   } else {
-    throw new Error('handlePackageTransactionCanceled: Bot API key is not provided');
+    throw new Error(
+      'handlePackageTransactionCanceled: Bot API key is not provided',
+    );
   }
 
   return res
@@ -292,7 +296,7 @@ export const handleSubscriptionTransactionSuccess = async ({
             text: `*Подписка активирована 🎉*
 
 Ваш новый уровень подписки:
-*${metadata.subscriptionLevel}*
+*${SubscriptionLevelsLabels[metadata.subscriptionLevel]}*
 
 _Благодарим за покупку\\!_`,
             reply_markup: {
@@ -335,7 +339,9 @@ _Благодарим за покупку\\!_`,
       throw new Error(`Error in sending tg message`, { cause: error });
     }
   } else {
-    throw new Error('handleSubscriptionTransactionSuccess:Bot API key is not provided');
+    throw new Error(
+      'handleSubscriptionTransactionSuccess:Bot API key is not provided',
+    );
   }
 
   return res
@@ -439,7 +445,9 @@ export const handleSubscriptionTransactionCanceled = async ({
       console.error(`Error in sending tg message`, error);
     }
   } else {
-    throw new Error('handlePackageTransactionCanceled:Bot API key is not provided');
+    throw new Error(
+      'handlePackageTransactionCanceled:Bot API key is not provided',
+    );
   }
 
   return res
