@@ -25,6 +25,7 @@ export interface User {
   yookassaPaymentMethodId: string | null;
   tokensBalance: number;
   userStage: string;
+  isBlockedBot: boolean;
   basicReqsMade: number;
   proReqsMade: number;
   imgGensMade: number;
@@ -101,6 +102,9 @@ const userSchema: Schema<User> = new Schema({
   },
   userStage: {
     type: String,
+  },
+  isBlockedBot: {
+    type: Boolean,
   },
   basicReqsMade: {
     type: Number,
