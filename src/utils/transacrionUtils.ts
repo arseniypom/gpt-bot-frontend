@@ -171,7 +171,6 @@ export const handlePackageTransactionCanceled = async ({
           },
           body: JSON.stringify({
             chat_id: process.env.ADMIN_TELEGRAM_ID,
-            parse_mode: 'MarkdownV2',
             text: `Отмена платежа:
 *YookassaPaymentId*: ${id}
 *TgId*: ${metadata.telegramId}
@@ -426,7 +425,6 @@ export const handleSubscriptionTransactionCanceled = async ({
           },
           body: JSON.stringify({
             chat_id: process.env.ADMIN_TELEGRAM_ID,
-            parse_mode: 'MarkdownV2',
             text: `Отмена платежа подписки:
 *YookassaPaymentId*: ${id}
 *TgId*: ${metadata.telegramId}

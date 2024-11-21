@@ -79,6 +79,11 @@ export default async function handler(
         }
 
         case 'payment.canceled': {
+          console.log('--------------------------------');
+          console.log('request', req);
+          console.log('-----');
+          console.log('payment.canceled BODY', body.object);
+          console.log('--------------------------------');
           if (isPackageTransaction(metadata)) {
             await handlePackageTransactionCanceled({
               res,
