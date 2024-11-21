@@ -138,7 +138,7 @@ export const handlePackageTransactionCanceled = async ({
   user.updatedAt = new Date();
   await user.save();
 
-  if (botApiKey) {
+  if (botApiKey && details?.reason !== 'expired_on_confirmation') {
     try {
       const responseFromUser = await fetch(
         `https://api.telegram.org/bot${botApiKey}/sendMessage`,
@@ -392,7 +392,7 @@ export const handleSubscriptionTransactionCanceled = async ({
   user.updatedAt = new Date();
   await user.save();
 
-  if (botApiKey) {
+  if (botApiKey && details?.reason !== 'expired_on_confirmation') {
     try {
       const responseFromUser = await fetch(
         `https://api.telegram.org/bot${botApiKey}/sendMessage`,
