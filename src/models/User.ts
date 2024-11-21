@@ -29,6 +29,10 @@ export interface User {
   basicReqsMade: number;
   proReqsMade: number;
   imgGensMade: number;
+  referralProgram: {
+    invitedBy: number | null;
+    invitedUserIds: number[];
+  };
   createdAt: Date;
   updatedAt: Date;
 }
@@ -114,6 +118,14 @@ const userSchema: Schema<User> = new Schema({
   },
   imgGensMade: {
     type: Number,
+  },
+  referralProgram: {
+    invitedBy: {
+      type: Number,
+    },
+    invitedUserIds: {
+      type: [Number],
+    },
   },
   createdAt: {
     type: Date,
