@@ -363,7 +363,7 @@ export const handleSubscriptionTransactionCanceled = async ({
   status: PaymentStatus;
   amount: { value: string };
   metadata: SubscriptionMetadata;
-  paymentMethod: SubscriptionPaymentMethod;
+  paymentMethod?: SubscriptionPaymentMethod;
   botApiKey?: string;
   details?: CancellationDetails;
 }) => {
@@ -379,7 +379,7 @@ export const handleSubscriptionTransactionCanceled = async ({
     totalAmount: totalAmountInt,
     subscriptionLevel: metadata.subscriptionLevel,
     yookassaPaymentId: id,
-    yookassaPaymentMethodId: paymentMethod.id,
+    yookassaPaymentMethodId: paymentMethod?.id || null,
     status,
     cancellationDetails: details,
   });
