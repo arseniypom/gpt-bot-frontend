@@ -33,6 +33,7 @@ export interface User {
     invitedBy: number | null;
     invitedUserIds: number[];
   };
+  usedPromocodes: string[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -126,6 +127,9 @@ const userSchema: Schema<User> = new Schema({
     invitedUserIds: {
       type: [Number],
     },
+  },
+  usedPromocodes: {
+    type: [String],
   },
   createdAt: {
     type: Date,
