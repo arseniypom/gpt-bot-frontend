@@ -1,5 +1,6 @@
 import { SubscriptionDuration } from '@/types';
 import { SubscriptionLevel } from '@/types/packagesAndSubscriptions';
+import { ReferralProgram, UserStats } from '@/types/user';
 import dayjs from 'dayjs';
 import { Schema, model } from 'mongoose';
 
@@ -26,13 +27,8 @@ export interface User {
   tokensBalance: number;
   userStage: string;
   isBlockedBot: boolean;
-  basicReqsMade: number;
-  proReqsMade: number;
-  imgGensMade: number;
-  referralProgram: {
-    invitedBy: number | null;
-    invitedUserIds: number[];
-  };
+  stats: UserStats;
+  referralProgram: ReferralProgram;
   usedPromocodes: string[];
   createdAt: Date;
   updatedAt: Date;
@@ -111,14 +107,8 @@ const userSchema: Schema<User> = new Schema({
   isBlockedBot: {
     type: Boolean,
   },
-  basicReqsMade: {
-    type: Number,
-  },
-  proReqsMade: {
-    type: Number,
-  },
-  imgGensMade: {
-    type: Number,
+  stats: {
+    type: Object,
   },
   referralProgram: {
     invitedBy: {
