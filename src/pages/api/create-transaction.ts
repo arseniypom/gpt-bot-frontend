@@ -61,7 +61,9 @@ export default async function handler(
               metadata,
               botApiKey: BOT_API_KEY,
             });
-            break;
+            return res
+              .status(200)
+              .json({ message: 'Transaction with succeeded status saved' });
           } else if (isSubscriptionTransaction(metadata)) {
             await handleSubscriptionTransactionSuccess({
               res,
@@ -72,7 +74,9 @@ export default async function handler(
               paymentMethod: payment_method,
               botApiKey: BOT_API_KEY,
             });
-            break;
+            return res
+              .status(200)
+              .json({ message: 'Subscription transaction with succeeded status saved' });
           } else {
             throw new Error('Invalid metadata in payment.succeeded');
           }
@@ -89,10 +93,11 @@ export default async function handler(
               botApiKey: BOT_API_KEY,
               details: body.object.cancellation_details,
             });
-            break;
+            return res
+              .status(200)
+              .json({ message: 'Transaction with canceled status saved' });
           } else if (isSubscriptionTransaction(metadata)) {
             await handleSubscriptionTransactionCanceled({
-              res,
               id,
               status,
               amount,
@@ -101,7 +106,9 @@ export default async function handler(
               botApiKey: BOT_API_KEY,
               details: body.object.cancellation_details,
             });
-            break;
+            return res
+              .status(200)
+              .json({ message: 'Subscription transaction with canceled status saved' });
           } else {
             throw new Error('Invalid metadata in payment.canceled');
           }

@@ -91,10 +91,6 @@ _Благодарим за покупку\\!_`,
       'handlePackageTransactionSuccess:Bot API key is not provided',
     );
   }
-
-  return res
-    .status(200)
-    .json({ message: 'Transaction with succeeded status saved' });
 };
 
 export const handlePackageTransactionCanceled = async ({
@@ -193,10 +189,6 @@ export const handlePackageTransactionCanceled = async ({
       'handlePackageTransactionCanceled: Bot API key is not provided',
     );
   }
-
-  return res
-    .status(200)
-    .json({ message: 'Transaction with canceled status saved' });
 };
 
 export const handleSubscriptionTransactionSuccess = async ({
@@ -342,14 +334,9 @@ _Благодарим за покупку\\!_`,
       'handleSubscriptionTransactionSuccess:Bot API key is not provided',
     );
   }
-
-  return res
-    .status(200)
-    .json({ message: 'Transaction with succeeded status saved' });
 };
 
 export const handleSubscriptionTransactionCanceled = async ({
-  res,
   id,
   status,
   amount,
@@ -358,7 +345,6 @@ export const handleSubscriptionTransactionCanceled = async ({
   botApiKey,
   details,
 }: {
-  res: NextApiResponse;
   id: string;
   status: PaymentStatus;
   amount: { value: string };
@@ -406,7 +392,9 @@ export const handleSubscriptionTransactionCanceled = async ({
             parse_mode: 'MarkdownV2',
             text: `*Кажется, что\\-то пошло не так 🙁*\nК сожалению, мы не смогли обработать Вашу оплату подписки${
               metadata.subscriptionLevel
-                ? ` уровня *${SubscriptionLevelsLabels[metadata.subscriptionLevel]}*`
+                ? ` уровня *${
+                    SubscriptionLevelsLabels[metadata.subscriptionLevel]
+                  }*`
                 : ''
             }\\.\n\nПожалуйста, попробуйте ещё раз \\/subscription или обратитесь в поддержку \\/support`,
           }),
@@ -451,8 +439,4 @@ export const handleSubscriptionTransactionCanceled = async ({
       'handlePackageTransactionCanceled:Bot API key is not provided',
     );
   }
-
-  return res
-    .status(200)
-    .json({ message: 'Transaction with canceled status saved' });
 };
