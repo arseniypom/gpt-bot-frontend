@@ -13,6 +13,7 @@ import { NextApiResponse } from 'next';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 import { SubscriptionLevels, SubscriptionLevelsLabels } from '@/types';
+import AdCampaign from '@/models/AdCampaign';
 
 dayjs.extend(duration);
 
@@ -49,6 +50,13 @@ export const handlePackageTransactionSuccess = async ({
   const user = await User.findOne({ telegramId: metadata.telegramId });
   if (!user) {
     return res.status(404).json({ error: 'User not found' });
+  }
+  if (user.adCampaignCode) {
+    const adCampaign = await AdCampaign.findOne({ adCode: user.adCampaignCode });
+    if (adCampaign) {
+      adCampaign.stats.tokensBought += Number(metadata.tokensNumber);
+      await adCampaign.save();
+    }
   }
   user.tokensBalance += Number(metadata.tokensNumber);
   user.email = metadata.email;
@@ -228,7 +236,17 @@ export const handleSubscriptionTransactionSuccess = async ({
   if (!user) {
     return res.status(404).json({ error: 'User not found' });
   }
-
+  if (user.adCampaignCode) {
+    const adCampaign = await AdCampaign.findOne({ adCode: user.adCampaignCode });
+    if (adCampaign) {
+      if (metadata.subscriptionLevel === SubscriptionLevels.OPTIMUM_TRIAL) {
+        adCampaign.stats.trialsBought += 1;
+      } else {
+        adCampaign.stats.subsBought += 1;
+      }
+      await adCampaign.save();
+    }
+  }
   user.subscriptionLevel = metadata.subscriptionLevel;
   user.yookassaPaymentMethodId = paymentMethod.id;
   let subscriptionDuration = JSON.parse(metadata.subscriptionDuration);

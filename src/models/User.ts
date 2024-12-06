@@ -29,6 +29,7 @@ export interface User {
   isBlockedBot: boolean;
   stats: UserStats;
   referralProgram: ReferralProgram;
+  adCampaignCode: string | null;
   usedPromocodes: string[];
   createdAt: Date;
   updatedAt: Date;
@@ -117,6 +118,9 @@ const userSchema: Schema<User> = new Schema({
     invitedUserIds: {
       type: [Number],
     },
+  },
+  adCampaignCode: {
+    type: String,
   },
   usedPromocodes: {
     type: [String],
