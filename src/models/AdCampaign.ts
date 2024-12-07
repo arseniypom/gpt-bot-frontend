@@ -11,6 +11,7 @@ const adCampaignSchema = new mongoose.Schema({
   name: { type: String, required: true },
   source: { type: String, required: true },
   adCode: { type: String, unique: true, required: true },
+  link: { type: String, required: true },
   text: { type: String, default: '' },
   stats: { type: adCampaignStatsSchema, default: () => ({}) },
   createdAt: {
